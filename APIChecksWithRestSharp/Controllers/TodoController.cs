@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using APIChecksWithRestSharp.Models;
-using Microsoft.AspNetCore.Authorization;
 
 namespace APIChecksWithRestSharp.Controllers
 {
