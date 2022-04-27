@@ -1,6 +1,7 @@
 ﻿using APIChecksWithRestSharp.Models;
 using NUnit.Framework;
 using RestSharp;
+using System.Collections;
 using System.Net;
 
 namespace ApiChecks
@@ -63,6 +64,51 @@ namespace ApiChecks
 
             //Assert
             Assert.AreEqual(HttpStatusCode.Created, response.StatusCode, $"Post new todo item should have returned a Created status code; instead it returned {response.StatusCode}");
+        }
+
+        [Test, TestCaseSource(typeof(TestDataClass), "PutTestData")]
+        public async Task<string> VerifyPut(TodoItem item)
+        {
+            //Arrange
+            var client = new RestClient("https://localhost:44367/api/Todo/1");
+            var request = new RestRequest();
+
+            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(item);
+            request.AddHeader("CanAccess", "true");
+
+            //Act
+            RestResponse response = await client.ExecutePutAsync(request);
+
+            //Assert
+            return response.StatusCode.ToString();
+        }
+    }
+
+    public class TestDataClass
+    {
+        public static IEnumerable PutTestData
+        {
+            get
+            {
+                yield return new TestCaseData(new TodoItem
+                {
+                    Name = "mow the neighbor's lawn",
+                    DateDue = new DateTime(2035, 12, 31),
+                    IsComplete = false
+                }).Returns("NoContent").SetName("happy path");
+                yield return new TestCaseData(new TodoItem
+                {
+                    Name = "",
+                    DateDue = new DateTime(2035, 12, 31),
+                    IsComplete = false
+                }).Returns("BadRequest").SetName("blank name");
+                yield return new TestCaseData(new TodoItem
+                {
+                    DateDue = new DateTime(2035, 12, 31),
+                    IsComplete = false
+                }).Returns("BadRequest").SetName("missing name field");
+            }
         }
     }
 }
