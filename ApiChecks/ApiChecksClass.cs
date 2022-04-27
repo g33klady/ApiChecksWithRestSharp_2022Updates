@@ -40,5 +40,29 @@ namespace ApiChecks
 
             StringAssert.AreEqualIgnoringCase("Walk the dog", response.Data.Name, $"Actual name should have been 'Walk the dog' but was {response.Data.Name}");
         }
+
+        [Test]
+        public async Task VerifyPostWithAllValidValuesReturns201()
+        {
+            //Arrange
+            TodoItem expectedItem = new TodoItem
+            {
+                Name = "mow the lawn",
+                DateDue = new DateTime(2035, 12, 31),
+                IsComplete = false
+            };
+            var client = new RestClient("https://localhost:44367/api/Todo");
+            var request = new RestRequest();
+
+            request.RequestFormat = DataFormat.Json;
+            request.AddJsonBody(expectedItem);
+            request.AddHeader("CanAccess", "true");
+
+            //Act
+            RestResponse response = await client.ExecutePostAsync(request);
+
+            //Assert
+            Assert.AreEqual(HttpStatusCode.Created, response.StatusCode, $"Post new todo item should have returned a Created status code; instead it returned {response.StatusCode}");
+        }
     }
 }
