@@ -15,7 +15,7 @@ namespace ApiChecks
             var request = new RestRequest();
 
             //Act
-            RestResponse response = await client.GetAsync(request);
+            RestResponse response = await client.ExecuteGetAsync(request);
 
             //Assert
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode, $"GET all todo items did not return a success status code; it returned {response.StatusCode}");
